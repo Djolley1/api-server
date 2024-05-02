@@ -2,64 +2,51 @@
 
 const express = require('express');
 const router = express.Router();
-const Food = require('../models/food');
+const { Food } = require('../models/index.js');
 
-router.post('/', async (req, res) => {
-  try {
-    const { name, calories, isVegan } = req.body;
-    const food = await Food.create({ name, calories, isVegan });
-    res.status(201).json(food);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+// RESTful route definitions for food
+router.get('/food', getFood);
+router.get('/food/:id', getOneFood);
+router.post('/food', createFood);
+router.put('/food/:id', updateFood);
+router.delete('/food/:id', deleteFood);
 
-router.get('/', async (req, res) => {
-  try {
-    const foods = await Food.findAll();
-    res.json(foods);
-  } catch (err){
-    res.status(500).json({ message: err.message });
-  }
-});
+// ROUTE HANDLERS
+async function getFood( request, response ) {
+  let qs = request.query;
+  let foods = await Food.findAll({where: qs});
+  let data = {count: foods.length, results: foods};
+  response.status(200).json(data);
+}
 
-router.get('/:id', async(req, res) => {
-  try {
-    const food = await Food.findByPk(req.params.id);
-    if (!food) {
-      return res.status(404).json({ message: 'Food not found' });
-    }
-    res.json(food);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+async function getOneFood( request, response ) {
+  let id = request.params.id;
+  let data = await Food.findOne({where: {id:id}});
+  response.status(200).json(data);
+}
 
-router.put('/:id', async (req, res) => {
-  try {
-    const { name, calories, isVegan } = req.body;
-    const food = await Food.findByPk(req.params.id);
-    if (!food) {
-      return res.status(404).json({ message: 'Food not found' });
-    }
-    await food.update({ name, calories, isVegan });
-    res.json(food);
-  }catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+async function createFood( request, response ) {
+  let data = request.body;
+  let newFood = await Food.create(data);
+  response.status(201).json(newFood);
+}
 
-router.delete('/:id', async (req, res) => {
-  try {
-    const food = await Food.findByPk(req.params.id);
-    if (!food) {
-      return res.status(404).json({ message: 'Food not found' });
-    }
-    await food.destroy();
-    res.json(food);
-  }catch (err) {
-    res.status(500).json({ message: err.message });
+async function updateFood( request, response ) {
+  let id = request.params.id;
+  let data = request.body;
+  let food = await Food.findOne({where: {id:id}});
+  let updatedFood = await food.update(data);
+  response.status(200).json(updatedFood);
+}
+
+async function deleteFood( request, response ) {
+  let id = request.params.id;
+  let deletedFood = await Food.destroy( {where: {id:id}} );
+  if ( typeof deletedFood === 'number' ) {
+    response.status(204).send(null);
+  } else {
+    throw new Error('Error deleting record');
   }
-});
+}
 
 module.exports = router;

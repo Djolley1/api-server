@@ -4,11 +4,11 @@
   "description": "API Server",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage",
-    "init:config": "sequelize init:config",
-    "db:create": "sequelize db:create"
+    "test": "NODE_ENV=test jest --coverage",
+    "test-watch": "NODE_ENV=test jest --watchAll --coverage",
+    "start": "node index.js"
   },
-  "author": "Demarquies Jolley",
+  "author": "John Cokos",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",

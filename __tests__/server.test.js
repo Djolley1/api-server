@@ -32,28 +32,31 @@ describe('API Server', () => {
     let response = await mockRequest.post('/food').send(data);
     expect(response.status).toBe(201);
     expect(response.body.id).toBeDefined();
-    // Add more expect statements based on your model fields
+    expect(response.body.name).toBe('Sample Food');
+    expect(response.body.calories).toBe('100');
+    expect(response.body.isVegan).toBe('true'); 
   });
 
   it('can get a list of records', async () => {
     let response = await mockRequest.get('/food');
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
-    // Add more expect statements based on your expected response
+    expect(response.body.length).toBeGreaterThan(0);
+    expect(response.body[0]).toHaveProperty('name');
   });
 
   it('can get a record', async () => {
     let response = await mockRequest.get('/food/1');
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Object);
-    // Add more expect statements based on your expected response
+    expect(response.body).toHaveProperty('name');
+    expect(response.body.name).toBeDefined();
   });
 
   it('can update a record', async () => {
-    let data = {'name':'Updated Food'}; // Adjust data according to your model structure
-    let response = await mockRequest.put('/food/1').send(data);
+    let data = {};
+    let response = await mockRequest.put('/food/1', data);
     expect(response.status).toBe(200);
-    // Add more expect statements based on your expected response
   });
 
   it('can delete a record', async () => {
@@ -64,8 +67,8 @@ describe('API Server', () => {
 
     // Delete that record
     let deleteResponse = await mockRequest.delete(`/food/${id}`);
-    expect(deleteResponse.status).toBe(200);
-    // Add more expect statements based on your expected response
+    expect(deleteResponse.status).toBe(204);
+    expect(deleteResponse.text).toBe('');
   });
 
 });

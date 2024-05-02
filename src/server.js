@@ -1,26 +1,34 @@
 'use strict';
 
 const express = require('express');
-const bodyParser = require('body-parser');
-const foodRouter = require('./routes/food');
-const clothesRouter = require('./routes/clothes');
-const handleNotFound = require('./error-handlers/404');
-const handleInternalServerError = require('./error-handlers/500');
+const cors = require('cors');
 
 const app = express();
 
-app.use(bodyParser.json());
+const notFoundHandler = require('./error-handlers/404.js');
+const errorHandler = require('./error-handlers/500.js');
+const logger = require('./middleware/logger.js');
+const peopleRoutes = require('./routes/people.js');
+const foodRoutes = require('./routes/food.js');
 
-app.use('/food', foodRouter);
-app.use('/clothes', clothesRouter);
+app.use(cors());
+app.use(express.json());
 
-// Error handlers
-app.use(handleNotFound);
-app.use(handleInternalServerError);
+app.use(logger);
 
-const PORT = process.env.PORT || 5432;
-app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-});
+app.use(peopleRoutes);
+app.use(foodRoutes);
+// Force an error for the tests
+app.get('/broken', (req,res,next) => next('whoops!'));
 
-module.exports = { app };
+app.use('*', notFoundHandler);
+app.use(errorHandler);
+
+
+function start(port) {
+  app.listen(port, () => {
+    console.log(`Server is up on ${port}`);
+  });
+}
+
+module.exports = { app, start };

@@ -2,69 +2,49 @@
 
 const express = require('express');
 const router = express.Router();
-const Clothes = require('../models/clothes');
+const { Clothes } = require('../models/index.js');
 
-// Route to add a record
-router.post('/', async (req, res) => {
-  try {
-    const { brand, size, color } = req.body;
-    const clothes = await Clothes.create({ brand, size, color });
-    res.status(201).json(clothes);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+// RESTful route definitions for clothes
+router.get('/clothes', getClothes);
+router.get('/clothes/:id', getOneClothes);
+router.post('/clothes', createClothes);
+router.put('/clothes/:id', updateClothes);
+router.delete('/clothes/:id', deleteClothes);
 
-// Route to get all records
-router.get('/', async (req, res) => {
-  try {
-    const clothes = await Clothes.findAll();
-    res.json(clothes);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+// ROUTE HANDLERS
+async function getClothes( request, response ) {
+  let data = await Clothes.findAll();
+  response.status(200).json(data);
+}
 
-// Route to get one record
-router.get('/:id', async (req, res) => {
-  try {
-    const clothes = await Clothes.findByPk(req.params.id);
-    if (!clothes) {
-      return res.status(404).json({ message: 'Clothes not found' });
-    }
-    res.json(clothes);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+async function getOneClothes( request, response ) {
+  let id = request.params.id;
+  let data = await Clothes.findOne({where: {id:id}});
+  response.status(200).json(data);
+}
 
-// Route to update a record
-router.put('/:id', async (req, res) => {
-  try {
-    const { brand, size, color } = req.body;
-    const clothes = await Clothes.findByPk(req.params.id);
-    if (!clothes) {
-      return res.status(404).json({ message: 'Clothes not found' });
-    }
-    await clothes.update({ brand, size, color });
-    res.json(clothes);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+async function createClothes( request, response ) {
+  let data = request.body;
+  let newClothes = await Clothes.create(data);
+  response.status(201).json(newClothes);
+}
 
-// Route to delete a record
-router.delete('/:id', async (req, res) => {
-  try {
-    const clothes = await Clothes.findByPk(req.params.id);
-    if (!clothes) {
-      return res.status(404).json({ message: 'Clothes not found' });
-    }
-    await clothes.destroy();
-    res.json(clothes);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+async function updateClothes( request, response ) {
+  let id = request.params.id;
+  let data = request.body;
+  let clothes = await Clothes.findOne({where: {id:id}});
+  let updatedClothes = await clothes.update(data);
+  response.status(200).json(updatedClothes);
+}
+
+async function deleteClothes( request, response ) {
+  let id = request.params.id;
+  let deletedClothes = await Clothes.destroy( {where: {id:id}} );
+  if ( typeof deletedClothes === 'number' ) {
+    response.status(204).send(null);
+  } else {
+    throw new Error('Error deleting record');
   }
-});
+}
 
 module.exports = router;
