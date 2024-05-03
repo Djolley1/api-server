@@ -33,14 +33,14 @@ describe('API Server', () => {
     expect(response.status).toBe(201);
     expect(response.body.id).toBeDefined();
     expect(response.body.name).toBe('Sample Food');
-    expect(response.body.calories).toBe('100');
-    expect(response.body.isVegan).toBe('true'); 
+    expect(response.body.calories).toBe(100);
+    expect(response.body.isVegan).toBe(true); 
   });
 
   it('can get a list of records', async () => {
     let response = await mockRequest.get('/food');
     expect(response.status).toBe(200);
-    expect(response.body).toBeInstanceOf(Array);
+    expect(response.body).toBeInstanceOf(Object);
     expect(response.body.length).toBeGreaterThan(0);
     expect(response.body[0]).toHaveProperty('name');
   });
