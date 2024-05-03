@@ -8,6 +8,8 @@ const router = express.Router();
 
 const {People} = require('../models/index.js');
 
+const Model = People;
+
 
 // RESTful route definitions
 router.get('/people', getPeople);
@@ -18,33 +20,40 @@ router.delete('/people/:id', deletePerson);
 
 // ROUTE HANDLERS
 async function getPeople( request, response ) {
-  let data = await People.findAll();
+  let data = await Model.read( null, {
+    include: {
+      model: People.model,
+    },
+  });
   response.status(200).json(data);
 }
 
 async function getOnePerson( request, response ) {
   let id = request.params.id;
-  let data = await People.findOne({where: {id:id}});
+  let data = await Model.read(id, {
+    include: {
+      model: People.model,
+    },
+  });
   response.status(200).json(data);
 }
 
 async function createPerson( request, response ) {
   let data = request.body;
-  let newPerson = await People.create(data);
+  let newPerson = await Model.create(data);
   response.status(201).json(newPerson);
 }
 
 async function updatePerson( request, response ) {
   let id = request.params.id;
   let data = request.body;
-  let person = await People.findOne({where: {id:id}});
-  let updatedPerson = await person.update(data);
+  let updatedPerson = await Model.update(id, data);
   response.status(200).json(updatedPerson);
 }
 
 async function deletePerson( request, response ) {
   let id = request.params.id;
-  let deletedPerson = await People.destroy( {where: {id:id}} );
+  let deletedPerson = await Model.delete(id);
   if ( typeof deletedPerson === 'number' ) {
     response.status(204).send(null);
   } else {
