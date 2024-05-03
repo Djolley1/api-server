@@ -4,8 +4,8 @@
   "description": "API Server",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test jest --coverage",
-    "test-watch": "NODE_ENV=test jest --watchAll --coverage",
+    "test": "jest --coverage",
+    "test-watch": "jest --watchAll --coverage",
     "start": "node index.js",
     "init:config": "sequelize init:config",
     "db:create": "sequelize db:create"
