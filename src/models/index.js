@@ -1,19 +1,26 @@
-const DATABASE_URL = process.env.NODE_ENV === 'test' ? 'sqlite:memory:' : process.env.DATABASE_URL;
+// const DATABASE_URL = process.env.NODE_ENV === 'test' ? 'sqlite:memory:' : process.env.DATABASE_URL;
 
-const { Sequelize, DataTypes } = require('sequelize');
+// const { Sequelize, DataTypes } = require('sequelize');
 const Collection = require('./collection'); // Import the Collection class
 const PeopleModel = require('./people');
 const FoodModel = require('./food');
 
-let sequelizeOptions = {
-  dialect: process.env.NODE_ENV === 'test' ? 'sqlite' : 'postgres', // Assuming PostgreSQL for non-test environments
-};
+// let sequelizeOptions = {
+//   dialect: process.env.NODE_ENV === 'test' ? 'sqlite' : 'postgres', // Assuming PostgreSQL for non-test environments
+// };
+const DATABASE_URL = process.env.NODE_ENV === 'test' ? 'sqlite:memory' : process.env.DATABASE_URL;
+console.log('Database URL:', DATABASE_URL);
+const { Sequelize, DataTypes } = require('sequelize');
+let sequelize = new Sequelize(DATABASE_URL, {
+  dialect: 'postgres',
+  logging: false,
+});
 
 // if (process.env.NODE_ENV === 'test') {
 //   sequelizeOptions.storage = 'memory';
 // }
 
-let sequelize = new Sequelize(DATABASE_URL, sequelizeOptions);
+// let sequelize = new Sequelize(DATABASE_URL, sequelizeOptions);
 
 const People = PeopleModel(sequelize, DataTypes);
 const Food = FoodModel(sequelize, DataTypes);

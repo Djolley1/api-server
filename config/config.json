@@ -1,7 +1,7 @@
 {
   "development": {
-    "username": "postgres",
-    "password": "AhmirBailey2022!",
+    "username": "demarquies_jolley_user",
+    "password": "8I9KrPrd52xVT8ZqfmLuCEuKJAlI5yUU",
     "database": "database_development",
     "host": "127.0.0.1",
     "dialect": "postgres"
@@ -11,13 +11,13 @@
     "password": "8I9KrPrd52xVT8ZqfmLuCEuKJAlI5yUU",
     "database": "database_test",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "postgres"
   },
   "production": {
     "username": "demarquies_jolley_user",
     "password": "8I9KrPrd52xVT8ZqfmLuCEuKJAlI5yUU",
     "database": "database_production",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "postgres"
   }
 }
