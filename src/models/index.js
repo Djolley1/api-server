@@ -1,39 +1,29 @@
-// const DATABASE_URL = process.env.NODE_ENV === 'test' ? 'sqlite:memory' : process.env.DATABASE_URL;
-// const { Sequelize, DataTypes } = require('sequelize');
-
-// // Initialize Sequelize with database connection parameters
-// const sequelize = new Sequelize(DATABASE_URL,{
-//   dialect: 'postgres',
-//   logging: false,
-// });
-
-// // Define your models
-// const Food = require('./food');
-// const Clothes = require('./clothes');
-
-// // Export the models
-// module.exports = { db: sequelize, Food: Food(sequelize, DataTypes)};
-
-
 const DATABASE_URL = process.env.NODE_ENV === 'test' ? 'sqlite:memory:' : process.env.DATABASE_URL;
 
 const { Sequelize, DataTypes } = require('sequelize');
+const Collection = require('./collection'); // Import the Collection class
+const PeopleModel = require('./people');
+const FoodModel = require('./food');
 
 let sequelizeOptions = {
   dialect: process.env.NODE_ENV === 'test' ? 'sqlite' : 'postgres', // Assuming PostgreSQL for non-test environments
 };
 
-if (process.env.NODE_ENV === 'test') {
-  sequelizeOptions.storage = 'memory'; // For SQLite
-}
+// if (process.env.NODE_ENV === 'test') {
+//   sequelizeOptions.storage = 'memory';
+// }
 
 let sequelize = new Sequelize(DATABASE_URL, sequelizeOptions);
 
-const peopleModel = require('./people.js');
-const foodModel = require('./food.js');
+const People = PeopleModel(sequelize, DataTypes);
+const Food = FoodModel(sequelize, DataTypes);
+
+// Create instances of Collection class for each model
+const peopleCollection = new Collection(People);
+const foodCollection = new Collection(Food);
 
 module.exports = {
   db: sequelize,
-  People: peopleModel(sequelize, DataTypes),
-  Food: foodModel(sequelize, DataTypes),
+  People: peopleCollection,
+  Food: foodCollection,
 };

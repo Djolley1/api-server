@@ -26,6 +26,7 @@ app.use(errorHandler);
 
 
 function start(port) {
+  console.log(port);
   app.listen(port, () => {
     console.log(`Server is up on ${port}`);
   });
